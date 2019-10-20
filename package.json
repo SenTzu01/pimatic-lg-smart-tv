@@ -1,0 +1,40 @@
+{
+  "name": "pimatic-lg-smart-tv",
+  "description": "Pimatic Plugin to monitor and control an LG TV with webOS",
+  "author": {
+    "name": "Danny Wigmans"
+  },
+  "main": "lg-smart-tv",
+  "files": [
+    "lg-smart-tv.coffee",
+    "lg-smart-tv-config-schema.coffee",
+    "device-config-schema.coffee",
+    "devices",
+    "actions",
+    "LICENSE",
+    "HISTORY.md",
+    "README.md"
+  ],
+  "keywords": [
+    "LG",
+    "LG Smart TV",
+    "Pimatic"
+  ],
+  "version": "0.0.1",
+  "license": "AGPL-3.0",
+  "configSchema": "lg-smart-tv-config-schema.coffee",
+  "dependencies": {
+    "arp": "0.0.3",
+    "pimatic-plugin-commons": "^0.9.8",
+    "webos": "1.0.5",
+    "wol": "^1.0.6"
+  },
+  "optionalDependencies": {},
+  "peerDependencies": {
+    "pimatic": ">=0.8.0 <1.0.0"
+  },
+  "engines": {
+    "node": ">= 4",
+    "npm": ">1.1.x"
+  }
+}
