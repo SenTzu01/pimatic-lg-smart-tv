@@ -36,5 +36,28 @@ module.exports = (env) ->
         return promise
       )
     
+    _updateButton: (tv) =>
+      return Promise.resolve() if tv.ip isnt @config.tvIp
+      
+      remote = @plugin.getRemote()
+      remote.connectAsync({ address: tv.ip, key: tv.key }).then( () =>
+        remote.getChannelAsync()
+      
+      ).then( (channel) =>
+        @_base.debug(__("channel.id: %s, channel.name: %s", channel.id, channel.name))
+        if channel.id isnt @_button.webosId
+          buttonId = channel.name.toLowerCase().replace(/[\s\/%!&]/g,'-')
+          @buttonPressed(buttonId)
+        else
+          Promise.resolve()
+      
+      ).catch( (error) =>
+        @_base.debug("No TV channel active")
+      
+      ).finally( () =>
+        remote.disconnectAsync()
+      )
+    
     destroy: () ->
+
       super()

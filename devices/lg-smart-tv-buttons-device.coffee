@@ -10,24 +10,30 @@ module.exports = (env) ->
   class LgSmartTvButtonsDevice extends env.devices.ButtonsDevice
 
     constructor: (@config, @plugin, lastState) ->
-      @_base = commons.base @, @config.class
+      for b in @config.buttons
+        b.text = b.id unless b.text?
       
+      @_base = commons.base @, @config.class
       @debug = @plugin.debug || false
       @id = @config.id
       @name = @config.name
-      @_button = null
+      @_button = {}
       super(@config)
       
-      @_lastPressedButton = lastState?.lastPressedButton?.value
+      @_tv = @_getDevice()
+      @_tv.on('tvReady', @_updateButton)
       
-      for b in @config.buttons
-        b.text = b.id unless b.text?
+      @_lastPressedButton = lastState?.button?.value
+      for button in @config.buttons
+        @_button = button if button.id is @_lastPressedButton
+      
+
     
     _executeAction: (buttonId) =>
       
       for button in @config.buttons
         if button.id is buttonId
-          @_lastPressedButton = button.id
+          @_lastPressedButton = button.text
           @emit 'button', button.id
           @_button = button
           
@@ -56,7 +62,10 @@ module.exports = (env) ->
     
     _action: () =>
       throw new error("Method _executeAction() not implemented!")
+      
+    _updateButton: (tv) =>
+      throw new error("Method _updateButton() not implemented!")
     
     destroy: () ->
-      @plugin.removeListener('LgSmartTvDevice', @_onLgSmartTvDevice)
+      @_tv.removeListener("tvReady", @_updateButton)
       super()

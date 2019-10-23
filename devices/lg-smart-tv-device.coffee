@@ -34,15 +34,18 @@ module.exports = (env) ->
       state = false
       
       @_base.cancelUpdate()
-      @emit('tvReady', {ip: @tvIp, key: @key })
+      
       remote = @plugin.getRemote()
       remote.connectAsync({
         address: @tvIp, 
         key: @key
+      
       }).then( () =>
         state = true
         @_tvStarting = false
         @_base.debug __("Connected to: %s", @tvIp)
+        @emit('tvReady', {ip: @tvIp, key: @key })
+      
       ).catch( (error) =>
         @_base.debug __("Could not connect: %s", error.code)
         state = false
@@ -50,6 +53,7 @@ module.exports = (env) ->
       )
       .finally( () =>
         @_setState state if ! @_tvStarting
+        #@emit('tvReady', {ip: @tvIp, key: @key }) if state
         @_base.debug "LG TV Power status: ", state
         remote.disconnectAsync()
         remote = null

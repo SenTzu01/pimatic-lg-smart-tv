@@ -34,5 +34,26 @@ module.exports = (env) ->
         return promise
       )
     
+    _updateButton: (tv) =>
+      return Promise.resolve() if tv.ip isnt @config.tvIp
+      
+      remote = @plugin.getRemote()
+      remote.connectAsync({ address: tv.ip, key: tv.key }).then( () =>
+        remote.getInputAsync()
+      
+      ).then( (input) =>
+        @_base.debug(__("input.id: %s, input.name: %s", input.id, input.name))
+        if input?.id isnt @_button.id
+          @buttonPressed(input.id)
+        else
+          Promise.resolve()
+      
+      ).catch( (error) =>
+        @_base.debug("No TV input active")
+      
+      ).finally( () =>
+        remote.disconnectAsync()
+      )
+    
     destroy: () ->
       super()
