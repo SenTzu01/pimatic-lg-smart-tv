@@ -41,19 +41,38 @@ module.exports = (env) ->
         key: @key
       
       }).then( () =>
+        @_base.debug __("Connected to: %s", @tvIp)
         state = true
         @_tvStarting = false
-        @_base.debug __("Connected to: %s", @tvIp)
+        
         @emit('tvReady', {ip: @tvIp, key: @key })
-      
+        
+        remote.getAppAsync().then( (app) =>
+        
+          @emit('currentApp', @tvIp, app) if app?
+          remote.getChannelAsync()
+        
+        ).then( (channel) =>
+          
+          @emit('currentChannel', @tvIp, channel) if channel?
+          remote.getInputAsync()
+        
+        ).then( (input) =>
+          
+          @emit('currentInput', @tvIp, input) if input?
+          Promise.resolve()
+        
+        ).catch( (error) =>
+          @_base.debug(error)
+          Promise.resolve()
+        )
       ).catch( (error) =>
         @_base.debug __("Could not connect: %s", error.code)
         state = false
         @_tvStarting = false
-      )
-      .finally( () =>
+      
+      ).finally( () =>
         @_setState state if ! @_tvStarting
-        #@emit('tvReady', {ip: @tvIp, key: @key }) if state
         @_base.debug "LG TV Power status: ", state
         remote.disconnectAsync()
         remote = null
@@ -61,15 +80,8 @@ module.exports = (env) ->
         
       )
     
-    _getRemote: () =>
-      return new Remote({
-        debug: @debug, 
-        reconnect: false, 
-        connectTimeout: false
-      })
-    
     showMessage: (message) =>
-      remote = @_getRemote()
+      remote = @plugin.getRemote()
       remote.connectAsync({ address: @tvIp, key: @key }).then( (res) =>
         remote.showFloatAsync( message )
       
@@ -94,7 +106,7 @@ module.exports = (env) ->
         return Promise.resolve()
       
       unless newState
-        remote = @_getRemote()
+        remote = @plugin.getRemote()
         remote.connectAsync( { address: @tvIp, key: @key } ).then( (res) =>
           remote.turnOffAsync()
           @_setState newState

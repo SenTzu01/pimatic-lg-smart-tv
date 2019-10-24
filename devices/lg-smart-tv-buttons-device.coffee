@@ -21,7 +21,7 @@ module.exports = (env) ->
       super(@config)
       
       @_tv = @_getDevice()
-      @_tv.on('tvReady', @_updateButton)
+      #@_tv.on('tvReady', @_updateButton)
       
       @_lastPressedButton = lastState?.button?.value
       for button in @config.buttons
@@ -67,5 +67,5 @@ module.exports = (env) ->
       throw new error("Method _updateButton() not implemented!")
     
     destroy: () ->
-      @_tv.removeListener("tvReady", @_updateButton)
+      #@_tv.removeListener("tvReady", @_updateButton)
       super()

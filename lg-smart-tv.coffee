@@ -195,7 +195,7 @@ module.exports = (env) ->
     
     getRemote: () =>
       return new Remote({
-        debug: @debug, 
+        debug: false, 
         reconnect: false, 
         connectTimeout: false
       })

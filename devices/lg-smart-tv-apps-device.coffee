@@ -10,6 +10,10 @@ module.exports = (env) ->
   
   class LgSmartTvAppsDevice extends LgSmartTvButtonsDevice
     
+    constructor: (@config, @plugin, lastState) ->
+      super(@config, @plugin, lastState)
+      @_tv.on('currentApp', @_updateButton)
+    
     buttonPressed: (buttonId) ->
       @_executeAction(buttonId)
       return Promise.resolve()
@@ -34,28 +38,15 @@ module.exports = (env) ->
         return promise
       )
     
-    _updateButton: (tv) =>
-      return Promise.resolve() if tv.ip isnt @config.tvIp
+    _updateButton: (ip, app) =>
+      @_base.debug(__("app.id: %s", app.id))
       
-      remote = @plugin.getRemote()
-      remote.connectAsync({ address: tv.ip, key: tv.key }).then( () =>
-        remote.getAppAsync()
+      return Promise.resolve() if ip isnt @config.tvIp
       
-      ).then( (app) =>
-        @_base.debug(__("app.id: %s", app.id))
-        env.logger.info(@_button)
-        env.logger.info(@_button.id isnt app.id)
-        if @_button.id isnt app.id
-          @buttonPressed(app.id)
-        else
-          Promise.resolve()
-      
-      ).catch( (error) =>
-        @_base.debug("No TV app active")
-      
-      ).finally( () =>
-        remote.disconnectAsync()
-      )
-      
+      if @_button.id isnt app?.id
+        @buttonPressed(app.id)
+      return Promise.resolve()
+    
     destroy: () ->
+      @_tv.removeListener("currentApp", @_updateButton)
       super()
