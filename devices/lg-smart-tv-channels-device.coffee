@@ -11,7 +11,7 @@ module.exports = (env) ->
   class LgSmartTvChannelsDevice extends LgSmartTvButtonsDevice
     constructor: (@config, @plugin, lastState) ->
       super(@config, @plugin, lastState)
-      @_tv.on('currentChannel', @_updateButton)
+      @plugin.on('currentChannel', @_updateButton)
     
     buttonPressed: (buttonId) ->
       @_executeAction(buttonId)
@@ -48,5 +48,5 @@ module.exports = (env) ->
       return Promise.resolve()
     
     destroy: () ->
-      @_tv.removeListener("currentChannel", @_updateButton)
+      @plugin.removeListener("currentChannel", @_updateButton)
       super()

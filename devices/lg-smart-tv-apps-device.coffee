@@ -12,7 +12,7 @@ module.exports = (env) ->
     
     constructor: (@config, @plugin, lastState) ->
       super(@config, @plugin, lastState)
-      @_tv.on('currentApp', @_updateButton)
+      @plugin.on('currentApp', @_updateButton)
     
     buttonPressed: (buttonId) ->
       @_executeAction(buttonId)
@@ -48,5 +48,5 @@ module.exports = (env) ->
       return Promise.resolve()
     
     destroy: () ->
-      @_tv.removeListener("currentApp", @_updateButton)
+      @plugin.removeListener("currentApp", @_updateButton)
       super()

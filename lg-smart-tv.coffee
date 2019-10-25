@@ -187,9 +187,6 @@ module.exports = (env) ->
       }
       @framework.deviceManager.discoveredDevice('pimatic-lg-smart-tv', "#{deviceConfig.name}", deviceConfig)
     
-    emitToAllDevices: (signal, data) =>
-      @emit(signal, data)
-    
     turnOnTv: (mac) =>
       wol.wake(mac)
     

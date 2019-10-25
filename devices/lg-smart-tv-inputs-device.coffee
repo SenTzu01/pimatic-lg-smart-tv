@@ -12,7 +12,7 @@ module.exports = (env) ->
     
     constructor: (@config, @plugin, lastState) ->
       super(@config, @plugin, lastState)
-      @_tv.on('currentInput', @_updateButton)
+      @plugin.on('currentInput', @_updateButton)
     
     buttonPressed: (buttonId) ->
       @_executeAction(buttonId)
@@ -48,5 +48,5 @@ module.exports = (env) ->
       return Promise.resolve()
     
     destroy: () ->
-      @_tv.removeListener("currentInput", @_updateButton)
+      @plugin.removeListener("currentInput", @_updateButton)
       super()

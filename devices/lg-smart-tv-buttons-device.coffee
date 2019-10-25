@@ -33,23 +33,23 @@ module.exports = (env) ->
       
       for button in @config.buttons
         if button.id is buttonId
-          @_lastPressedButton = button.text
+          @_lastPressedButton = button.id
           @emit 'button', button.id
           @_button = button
           
-          tv = @_getDevice()
-          return Promise.reject() if ! tv?
+          #tv = @_getDevice()
+          return Promise.reject() if ! @_tv?
           
-          tv.getState().then( (state) =>
+          @_tv.getState().then( (state) =>
             # TV is ON
-            return @_action(@_button, tv.key) if state
+            return @_action(@_button, @_tv.key) if state
             
             #TV is OFF
-            tv.changeStateTo(true).then( () =>
+            @_tv.changeStateTo(true).then( () =>
               return new Promise( (resolve, reject) =>
                 # Wait until TV ready to accept requests
-                tv.once('tvReady', () =>
-                  @_action(@_button, tv.key)
+                @plugin.once('tvReady', () =>
+                  @_action(@_button, @_tv.key)
                 )
               )
             )

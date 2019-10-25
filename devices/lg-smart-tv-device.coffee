@@ -45,21 +45,21 @@ module.exports = (env) ->
         state = true
         @_tvStarting = false
         
-        @emit('tvReady', {ip: @tvIp, key: @key })
+        @plugin.emit('tvReady', {ip: @tvIp, key: @key })
         
         remote.getAppAsync().then( (app) =>
         
-          @emit('currentApp', @tvIp, app) if app?
+          @plugin.emit('currentApp', @tvIp, app) if app?
           remote.getChannelAsync()
         
         ).then( (channel) =>
           
-          @emit('currentChannel', @tvIp, channel) if channel?
+          @plugin.emit('currentChannel', @tvIp, channel) if channel?
           remote.getInputAsync()
         
         ).then( (input) =>
           
-          @emit('currentInput', @tvIp, input) if input?
+          @plugin.emit('currentInput', @tvIp, input) if input?
           Promise.resolve()
         
         ).catch( (error) =>
