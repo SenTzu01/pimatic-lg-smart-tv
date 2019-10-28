@@ -21,7 +21,6 @@ module.exports = (env) ->
       super(@config)
       
       @_tv = @_getDevice()
-      #@_tv.on('tvReady', @_updateButton)
       
       @_lastPressedButton = lastState?.button?.value
       for button in @config.buttons
@@ -37,19 +36,19 @@ module.exports = (env) ->
           @emit 'button', button.id
           @_button = button
           
-          #tv = @_getDevice()
-          return Promise.reject() if ! @_tv?
+          tv = @_getDevice()
+          return Promise.reject() if ! tv?
           
-          @_tv.getState().then( (state) =>
+          tv.getState().then( (state) =>
             # TV is ON
-            return @_action(@_button, @_tv.key) if state
+            return @_action(@_button, tv.key) if state
             
             #TV is OFF
-            @_tv.changeStateTo(true).then( () =>
+            tv.changeStateTo(true).then( () =>
               return new Promise( (resolve, reject) =>
                 # Wait until TV ready to accept requests
                 @plugin.once('tvReady', () =>
-                  @_action(@_button, @_tv.key)
+                  @_action(@_button, tv.key)
                 )
               )
             )
@@ -67,5 +66,4 @@ module.exports = (env) ->
       throw new error("Method _updateButton() not implemented!")
     
     destroy: () ->
-      #@_tv.removeListener("tvReady", @_updateButton)
       super()
