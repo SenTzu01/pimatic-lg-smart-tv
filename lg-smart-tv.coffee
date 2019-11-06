@@ -125,13 +125,13 @@ module.exports = (env) ->
         }
         
         channels.map( (channel) =>
-          if channel.tv and channel.adult is 0 and !channel.scrambled
-            button = {
-              id: channel.name.toLowerCase().replace(/[\s\/%!&]/g,'-')
-              text: channel.name
-              webosId: channel.id
-            }
-            deviceConfig.buttons.push(button)
+          #if channel.tv and channel.adult is 0 and !channel.scrambled
+          button = {
+            id: channel.name.toLowerCase().replace(/[\s\/%!&]/g,'-')
+            text: channel.name
+            webosId: channel.id
+          }
+          deviceConfig.buttons.push(button)
         )
         @framework.deviceManager.discoveredDevice('pimatic-lg-smart-tv-channels', "#{deviceConfig.name}", deviceConfig)
       )
