@@ -13,10 +13,6 @@ module.exports = (env) ->
     constructor: (@config, @plugin, lastState) ->
       super(@config, @plugin, lastState)
       @plugin.on('currentApp', @_updateButton)
-    
-    buttonPressed: (buttonId) ->
-      @_executeAction(buttonId)
-      return Promise.resolve()
 
     _action: (button, key) =>
       promise = null
@@ -27,15 +23,14 @@ module.exports = (env) ->
       
       ).then( (res) =>
         @_base.debug __("Application %s started on TV", button.text)
-        promise = Promise.resolve()
+        return Promise.resolve()
       
       ).catch( (error) =>
         @_base.logErrorWithLevel( "warn", __("Could not start application %s", button.text))
-        promise = Promise.reject()
+        return Promise.reject()
       
       ).finally( () =>
         remote.disconnectAsync()
-        return promise
       )
     
     _updateButton: (ip, app) =>

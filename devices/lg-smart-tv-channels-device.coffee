@@ -13,10 +13,6 @@ module.exports = (env) ->
       super(@config, @plugin, lastState)
       @plugin.on('currentChannel', @_updateButton)
     
-    buttonPressed: (buttonId) ->
-      @_executeAction(buttonId)
-      return Promise.resolve()
-    
     _action: (button, key) =>
       promise = null
       remote = @plugin.getRemote()
@@ -29,6 +25,7 @@ module.exports = (env) ->
         promise = Promise.resolve()
       
       ).catch( (error) =>
+        @_base.logErrorWithLevel( "warn", error)
         @_base.logErrorWithLevel( "warn", __("Could not change to channel %s", button.text))
         promise = Promise.reject()
       

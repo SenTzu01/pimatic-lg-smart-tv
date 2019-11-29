@@ -22,37 +22,54 @@ module.exports = (env) ->
       
       @_tv = @_getDevice()
       
+      @_buttonPressPending = false
+      
       @_lastPressedButton = lastState?.button?.value
       for button in @config.buttons
         @_button = button if button.id is @_lastPressedButton
       
-
+    buttonPressed: (buttonId) ->
+      return Promise.resolve() if buttonId is @_lastPressedButton || @_buttonPressPending
+      
+      @_buttonPressPending = true
+      @_executeAction(buttonId).then( () =>
+        @_buttonPressPending = false
+      
+      ).finally( () =>
+        return Promise.resolve()
+      )
     
     _executeAction: (buttonId) =>
       
-      for button in @config.buttons
-        if button.id is buttonId
-          @_lastPressedButton = button.id
-          @emit 'button', button.id
-          @_button = button
-          
-          tv = @_getDevice()
-          return Promise.reject() if ! tv?
-          
-          tv.getState().then( (state) =>
-            # TV is ON
-            return @_action(@_button, tv.key) if state
+      return new Promise( (resolve, reject) =>
+        @config.buttons.map( (button) =>
+          if button.id is buttonId
+            @_lastPressedButton = button.id
+            @emit 'button', button.id
+            @_button = button
             
-            #TV is OFF
-            tv.changeStateTo(true).then( () =>
-              return new Promise( (resolve, reject) =>
+            tv = @_getDevice()
+            return reject() if ! tv?
+            
+            tv.getState().then( (state) =>
+              # TV is ON
+              if state
+                @_action(@_button, tv.key).then( () =>
+                  return resolve()
+                )
+              
+              #TV is OFF
+              tv.changeStateTo(true).then( () =>
+                
                 # Wait until TV ready to accept requests
                 @plugin.once('tvReady', () =>
                   @_action(@_button, tv.key)
+                  return resolve()
                 )
               )
             )
-          )
+        )
+      )
     
     _getDevice: () =>
       return _(@plugin.framework.deviceManager.devices).values().filter(

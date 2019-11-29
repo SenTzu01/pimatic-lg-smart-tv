@@ -45,7 +45,7 @@ module.exports = (env) ->
         state = true
         @_tvStarting = false
         
-        @plugin.emit('tvReady', {ip: @tvIp, key: @key })
+        
         
         remote.getAppAsync().then( (app) =>
         
@@ -73,6 +73,7 @@ module.exports = (env) ->
       
       ).finally( () =>
         @_setState state if ! @_tvStarting
+        @plugin.emit('tvReady', {ip: @tvIp, key: @key }) if ! @_tvStarting
         @_base.debug "LG TV Power status: ", state
         remote.disconnectAsync()
         remote = null
