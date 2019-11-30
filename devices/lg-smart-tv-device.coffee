@@ -45,26 +45,21 @@ module.exports = (env) ->
         state = true
         @_tvStarting = false
         
-        
-        
         remote.getAppAsync().then( (app) =>
-        
           @plugin.emit('currentApp', @tvIp, app) if app?
-          remote.getChannelAsync()
         
-        ).then( (channel) =>
+        ).finally( () =>
+          remote.getChannelAsync().then( (channel) =>
+            @plugin.emit('currentChannel', @tvIp, channel) if channel?
           
-          @plugin.emit('currentChannel', @tvIp, channel) if channel?
-          remote.getInputAsync()
-        
-        ).then( (input) =>
-          
-          @plugin.emit('currentInput', @tvIp, input) if input?
-          Promise.resolve()
-        
-        ).catch( (error) =>
-          @_base.debug(error)
-          Promise.resolve()
+          ).finally( () =>
+            remote.getInputAsync().then( (input) =>
+              @plugin.emit('currentInput', @tvIp, input) if input?
+            
+            ).finally( () =>
+              Promise.resolve()
+            )
+          )
         )
       ).catch( (error) =>
         @_base.debug __("Could not connect: %s", error.code)
@@ -78,7 +73,7 @@ module.exports = (env) ->
         remote.disconnectAsync()
         remote = null
         @_base.scheduleUpdate @_checkStatus, @_interval * 1000
-        
+      
       )
     
     showMessage: (message) =>
