@@ -31,7 +31,6 @@ module.exports = (env) ->
     buttonPressed: (buttonId) ->
       return Promise.resolve() if buttonId is @_lastPressedButton || @_buttonPressPending
       
-      @_buttonPressPending = true
       @_executeAction(buttonId).then( () =>
         @_buttonPressPending = false
       
@@ -44,6 +43,7 @@ module.exports = (env) ->
       return new Promise( (resolve, reject) =>
         @config.buttons.map( (button) =>
           if button.id is buttonId
+            @_buttonPressPending = true
             @_lastPressedButton = button.id
             @emit 'button', button.id
             @_button = button
@@ -55,6 +55,7 @@ module.exports = (env) ->
               # TV is ON
               if state
                 @_action(@_button, tv.key).then( () =>
+                  @_buttonPressPending = false
                   return resolve()
                 )
               
@@ -63,8 +64,10 @@ module.exports = (env) ->
                 
                 # Wait until TV ready to accept requests
                 @plugin.once('tvReady', () =>
-                  @_action(@_button, tv.key)
-                  return resolve()
+                  @_action(@_button, tv.key).then( () =>
+                    @_buttonPressPending = false
+                    return resolve()
+                  )
                 )
               )
             )
