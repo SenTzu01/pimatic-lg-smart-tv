@@ -12,29 +12,43 @@
     "devices",
     "actions",
     "LICENSE",
-    "HISTORY.md",
     "README.md"
   ],
   "keywords": [
     "LG",
+    "WebOS",
     "LG Smart TV",
     "Pimatic"
   ],
   "version": "0.0.1",
-  "license": "AGPL-3.0",
+  "homepage": "https://github.com/sentzu01/pimatic-lg-smart-tv",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sentzu01/pimatic-lg-smart-tv.git"
+  },
+  "license": "GPL-3.0",
   "configSchema": "lg-smart-tv-config-schema.coffee",
   "dependencies": {
     "arp": "0.0.3",
     "pimatic-plugin-commons": "^0.9.8",
-    "webos": "1.0.5",
+    "webos": "^1.0.5",
     "wol": "^1.0.6"
   },
   "optionalDependencies": {},
   "peerDependencies": {
-    "pimatic": ">=0.8.0 <1.0.0"
+    "pimatic": "0.9.*"
   },
   "engines": {
-    "node": ">= 4",
+    "node": ">=4",
     "npm": ">1.1.x"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/sentzu01/pimatic-lg-smart-tv/issues"
+  },
+  "maintainers": [
+    {
+      "name": "Sentzu01",
+      "url": "https://github.com/SenTzu01"
+    }
+  ]
 }

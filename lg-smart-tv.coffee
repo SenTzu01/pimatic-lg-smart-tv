@@ -1,9 +1,7 @@
-# webOS plugin
 module.exports = (env) ->
   
   Promise = env.require 'bluebird'
   commons = require('pimatic-plugin-commons')(env)
-  
   webos = Promise.promisifyAll(require('webos'))
   Remote = webos.Remote
   Scanner = webos.Scanner
