@@ -20,7 +20,7 @@
     "LG Smart TV",
     "Pimatic"
   ],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/sentzu01/pimatic-lg-smart-tv",
   "repository": {
     "type": "git",
