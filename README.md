@@ -26,18 +26,18 @@ Originally this project was inspired by pimatic-lgtv (Vincent Riemer). However, 
 ### Plugin Configuration
 ```json
 {
-    "plugin": "lg-smart-tv",
-    "debug": false,
-    "smartTVs": [
-		{
-          "id": "192.168.0.101",
-          "mac": "a8:23:fe:66:dd:11"
-        },
-		{
-		  .......
-		}
-    ],
-    "active": true
+  "plugin": "lg-smart-tv",
+  "debug": false,
+  "smartTVs": [
+    {
+      "id": "192.168.0.101",
+      "mac": "a8:23:fe:66:dd:11"
+    },
+    {
+      .......
+    }
+  ],
+  "active": true
 }
 ```
 
@@ -55,12 +55,12 @@ Default settings through autodiscovery should work fine.
 
 ```json
 {
-      "class": "LgSmartTvDevice",
-      "name": "TV Livingroom",
-      "id": "tv-livingroom",
-      "tvIp": "192.168.0.101",
-      "tvMac": "a8:23:fe:66:dd:11",
-      "key": "401d6a314a8992695c0139c042084e4a"
+  "class": "LgSmartTvDevice",
+  "name": "TV Livingroom",
+  "id": "tv-livingroom",
+  "tvIp": "192.168.0.101",
+  "tvMac": "a8:23:fe:66:dd:11",
+  "key": "401d6a314a8992695c0139c042084e4a"
 }
 ```
 The device has the following configuration properties:
@@ -72,23 +72,24 @@ The device has the following configuration properties:
 | key             	  | ''       | String  | Unique key identifying Pimatic with the TV       |
 
 
-#### LgSmartTvAppsDevice / LgSmartTcInputsDevice
+#### LgSmartTvAppsDevice / LgSmartTvInputsDevice
 
 ```json
 {
-      "class": "LgSmartTvAppsDevice",
-      "name": "TV Apps",
-      "id": "lg-smart-tv-applications",
-      "tvIp": "192.168.0.101",
-      "buttons": [
-        {
-          "id": "netflix",
-          "text": "Netflix"
-        },
-		{
-		  .....
-		}
-      ]
+  "class": "LgSmartTvAppsDevice",
+  "name": "TV Apps",
+  "id": "lg-smart-tv-applications",
+  "tvIp": "192.168.0.101",
+  "buttons": [
+    {
+      "id": "netflix",
+      "text": "Netflix"
+    },
+	{
+	  .....
+	}
+  ]
+}
 ```
 
 | Property            | Default  | Type    | Description                                      |
@@ -104,21 +105,22 @@ In WebOS Apps and Inputs are treated similarly, therefore you can opt to include
 #### LgSmartTvChannelsDevice
 
 ```json
+{
+  "class": "LgSmartTvChannelsDevice",
+  "name": "TV Channels",
+  "id": "lg-smart-tv-channels",
+  "tvIp": "192.168.0.101",
+  "buttons": [
     {
-      "class": "LgSmartTvChannelsDevice",
-      "name": "TV Channels",
-      "id": "lg-smart-tv-channels",
-      "tvIp": "192.168.0.101",
-      "buttons": [
-        {
-          "id": "npo-1-hd",
-          "text": "NPO 1 HD",
-          "webosId": "3_36_1_501_114_14010_2249"
-        },
-		{
-		  ......
-		}
-	  ]
+      "id": "npo-1-hd",
+      "text": "NPO 1 HD",
+      "webosId": "3_36_1_501_114_14010_2249"
+    },
+	{
+      ......
+    }
+  ]
+}
 ```
 
 | Buttons Property    | Default  | Type    | Description                                      |
