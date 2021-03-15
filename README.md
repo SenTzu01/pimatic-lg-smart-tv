@@ -85,9 +85,9 @@ The device has the following configuration properties:
       "id": "netflix",
       "text": "Netflix"
     },
-	{
+    {
 	  .....
-	}
+    }
   ]
 }
 ```
@@ -116,7 +116,7 @@ In WebOS Apps and Inputs are treated similarly, therefore you can opt to include
       "text": "NPO 1 HD",
       "webosId": "3_36_1_501_114_14010_2249"
     },
-	{
+    {
       ......
     }
   ]
