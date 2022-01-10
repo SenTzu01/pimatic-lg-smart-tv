@@ -62,9 +62,9 @@ module.exports = (env) ->
           )
         )
       ).catch( (error) =>
-        @_base.debug __("Could not connect: %s", error.code)
-        state = false
-        @_tvStarting = false
+        #@_base.debug __("Could not connect: %s", error.code)
+        #state = false
+        #@_tvStarting = false
       
       ).finally( () =>
         @_setState state if ! @_tvStarting
