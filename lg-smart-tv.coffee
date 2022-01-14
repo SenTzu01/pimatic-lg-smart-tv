@@ -2,9 +2,10 @@ module.exports = (env) ->
   
   Promise = env.require 'bluebird'
   commons = require('pimatic-plugin-commons')(env)
-  webos = Promise.promisifyAll(require('webos'))
-  Remote = webos.Remote
-  Scanner = webos.Scanner
+  remote = Promise.promisifyAll(require('./lib/remote.js'))
+  scanner = Promise.promisifyAll(require('./lib/scanner.js'))
+  Remote = remote.Remote
+  Scanner = scanner.Scanner
   arp = Promise.promisifyAll(require('arp'))
   wol = require('wol')
     
@@ -95,7 +96,7 @@ module.exports = (env) ->
             @createSmartTvDevice(device, mac, newKey)
             
           ).catch( (error) =>
-            #env.logger.info(error)
+            env.logger.info(error)
           ).finally( () =>
             remote.disconnectAsync()
             scanner.stopScanning()
@@ -190,7 +191,7 @@ module.exports = (env) ->
     
     getRemote: () =>
       return new Remote({
-        debug: false, 
+        debug: @config.debug || false, 
         reconnect: false, 
         connectTimeout: false
       })

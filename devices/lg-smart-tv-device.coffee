@@ -6,7 +6,7 @@ module.exports = (env) ->
 
   wol = require('wol')
 
-  webos = Promise.promisifyAll(require('webos'))
+  webos = Promise.promisifyAll(require('../lib/remote.js'))
   Remote = webos.Remote
   
   # Device class representing the LG Smart TV
@@ -62,9 +62,9 @@ module.exports = (env) ->
           )
         )
       ).catch( (error) =>
-        #@_base.debug __("Could not connect: %s", error.code)
+        @_base.debug __("Could not connect: %s", error.code)
         #state = false
-        #@_tvStarting = false
+        @_tvStarting = false
       
       ).finally( () =>
         @_setState state if ! @_tvStarting

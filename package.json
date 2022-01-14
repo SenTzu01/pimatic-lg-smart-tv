@@ -5,22 +5,13 @@
     "name": "Danny Wigmans"
   },
   "main": "lg-smart-tv",
-  "files": [
-    "lg-smart-tv.coffee",
-    "lg-smart-tv-config-schema.coffee",
-    "device-config-schema.coffee",
-    "devices",
-    "actions",
-    "LICENSE",
-    "README.md"
-  ],
   "keywords": [
     "LG",
     "WebOS",
     "LG Smart TV",
     "Pimatic"
   ],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://github.com/sentzu01/pimatic-lg-smart-tv",
   "repository": {
     "type": "git",
@@ -31,8 +22,8 @@
   "dependencies": {
     "arp": "0.0.3",
     "pimatic-plugin-commons": "^0.9.8",
-    "webos": "^1.0.5",
-    "wol": "^1.0.6"
+    "wol": "^1.0.6",
+    "ws": "^1.0.1"
   },
   "optionalDependencies": {},
   "peerDependencies": {
@@ -47,8 +38,8 @@
   },
   "maintainers": [
     {
-      "name": "Sentzu01",
-      "url": "https://github.com/SenTzu01"
+      "name": "sentzu01",
+      "email": "sentzu01@gmail.com"
     }
   ]
 }

@@ -5,7 +5,7 @@ module.exports = (env) ->
   commons = require('pimatic-plugin-commons')(env)
   
   LgSmartTvButtonsDevice = require('./lg-smart-tv-buttons-device')(env)
-  webos = Promise.promisifyAll(require('webos'))
+  webos = Promise.promisifyAll(require('../lib/remote.js'))
   Remote = webos.Remote
   
   class LgSmartTvAppsDevice extends LgSmartTvButtonsDevice
