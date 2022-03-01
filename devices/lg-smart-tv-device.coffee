@@ -76,10 +76,10 @@ module.exports = (env) ->
       
       )
     
-    showMessage: (message) =>
+    showMessage: (message, title = "Home Automation Notification") =>
       remote = @plugin.getRemote()
       remote.connectAsync({ address: @tvIp, key: @key }).then( (res) =>
-        remote.showFloatAsync( message )
+        remote.showshowNotificationModalAsync( message, title )
       
       ).then( (res) =>
         @_base.debug __("Message %s displayed on %s", message, @name)

@@ -96,7 +96,7 @@ module.exports = (env) ->
             @createSmartTvDevice(device, mac, newKey)
             
           ).catch( (error) =>
-            env.logger.info(error)
+            env.logger.debug(error)
           ).finally( () =>
             remote.disconnectAsync()
             scanner.stopScanning()

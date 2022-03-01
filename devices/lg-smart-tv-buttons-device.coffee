@@ -29,7 +29,7 @@ module.exports = (env) ->
         @_button = button if button.id is @_lastPressedButton
       
     buttonPressed: (buttonId) ->
-      return Promise.resolve() if buttonId is @_lastPressedButton || @_buttonPressPending
+      return Promise.resolve() if @_buttonPressPending
       
       @_executeAction(buttonId).then( () =>
         @_buttonPressPending = false
