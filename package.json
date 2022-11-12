@@ -41,5 +41,36 @@
       "name": "sentzu01",
       "email": "sentzu01@gmail.com"
     }
-  ]
+  ],
+  "gitHead": "0d1f6d47bd029d0df7b33c313cc8fd04925e7f57",
+  "_id": "pimatic-lg-smart-tv@0.0.2",
+  "_nodeVersion": "10.16.3",
+  "_npmVersion": "7.5.6",
+  "dist": {
+    "integrity": "sha512-uAHs5eQpfWsd71leBd7nOcMPJcEL7+7jYGXJqdpqBg4Q5Z84VVyBLuTRt+4T86+uzn0FR5P5r2IWh3y5xwvCwg==",
+    "shasum": "57c512691696e6290a628750e400a4405167cfa9",
+    "tarball": "https://registry.npmjs.org/pimatic-lg-smart-tv/-/pimatic-lg-smart-tv-0.0.2.tgz",
+    "fileCount": 12,
+    "unpackedSize": 65555,
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgT1SNCRA9TVsSAnZWagAA8LgQAIb4MINg2Ry4PlNmD++0\n0JZtpMhVTz8bFE+Yu72hBwkHO4ATy0EJxnNTCN47V+1LniX1if/3vXSYSyzt\noqtmwNRQGKbUWsAByA6d9leFpwD+L13vcBixV1rSHSZXMGipagEQizJ9J3fk\n/fgtcsxTi5O14f+YQZ86yJ9Qtxd2046FnK0LeyS+kNGC21180jhJS6vnZoqX\nJ0ymdYIIb6+yFs7gL6wiGIMc8J44m/Rvc+VypOoATp9WfqP+zVm3rdp4dkrG\nAOCGnMgJTaoJ5Dn8GwAnPyEAekIbdWzR8P+CshJEahf+SFeACEvYYJWqFjha\na9IT3BtCUsdzvZ2ZRlM8W+Yiy/oIblbnVIz723nGKD594XOfaMRVi6pohd1g\nKfDjsBKHABVtgabPwyCHqLkr7kU5mObvbo7kyh01IlFn+GnwXlnOyg7CmbXl\nZiedmBWRt9puB7+B0dvrsMjfeWgOmFlX5VWc3gR4y9wwPkKNIzURLbouxbgZ\nkof0CS7kzCNr45g0i9faxk3KkpnmC5SL3lN6T3XYO0AWw7iEF5MUYtDYwLQy\nlZ/QCg6ywEHavLWU68/uMHzdzWf2lLyseyI6yp+YElzTBQRyaR5VdLuerFEk\nBPzWpX/2YBnLfNBRMZ4H1F/TNEBpw3YwE37CDwH/XVn3+CPVBGVwcX0Tg1Ge\n+dNS\r\n=ayVj\r\n-----END PGP SIGNATURE-----\r\n",
+    "signatures": [
+      {
+        "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+        "sig": "MEQCIAg24qGSgfvds8JFpnDiYgxccpCOUfsKzozbWJFUyAfVAiAKB9K9oKxNiwh91bTOBztxi4vmlchBTgpLlIjTBZC4cw=="
+      }
+    ]
+  },
+  "_npmUser": {
+    "name": "sentzu01",
+    "email": "sentzu01@gmail.com"
+  },
+  "directories": {},
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/pimatic-lg-smart-tv_0.0.2_1615811724690_0.39627778993427887"
+  },
+  "_hasShrinkwrap": false,
+  "_shasum": "57c512691696e6290a628750e400a4405167cfa9",
+  "_resolved": "https://registry.npmjs.org/pimatic-lg-smart-tv/-/pimatic-lg-smart-tv-0.0.2.tgz",
+  "_from": "pimatic-lg-smart-tv@0.0.2"
 }

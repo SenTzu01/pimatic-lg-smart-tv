@@ -5,8 +5,6 @@ module.exports = (env) ->
   commons = require('pimatic-plugin-commons')(env)
   
   LgSmartTvButtonsDevice = require('./lg-smart-tv-buttons-device')(env)
-  webos = Promise.promisifyAll(require('../lib/remote.js'))
-  Remote = webos.Remote
   
   class LgSmartTvAppsDevice extends LgSmartTvButtonsDevice
     
@@ -15,13 +13,8 @@ module.exports = (env) ->
       @plugin.on('currentApp', @_updateButton)
 
     _action: (button, key) =>
-      promise = null
-      remote = @plugin.getRemote()
-      
-      return remote.connectAsync({ address: @config.tvIp, key: key }).then( (res) =>
-        remote.openAppAsync(button.id, {})
-      
-      ).then( (res) =>
+      console.log(button.id)
+      return @plugin.getRemote(@_tv.tvIp, @_tv.key).launchApp(button.id).then( (res) =>
         @_base.debug __("Application %s started on TV", button.text)
         return Promise.resolve()
       
@@ -29,12 +22,10 @@ module.exports = (env) ->
         @_base.logErrorWithLevel( "warn", __("Could not start application %s", button.text))
         return Promise.reject()
       
-      ).finally( () =>
-        remote.disconnectAsync()
       )
     
     _updateButton: (ip, app) =>
-      @_base.debug(__("app.id: %s", app.id))
+      @_base.debug(__("app.id: %s", app.appId))
       
       return Promise.resolve() if ip isnt @config.tvIp
       

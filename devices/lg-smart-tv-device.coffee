@@ -3,11 +3,7 @@ module.exports = (env) ->
   Promise = env.require 'bluebird'
   _ = env.require 'lodash'
   commons = require('pimatic-plugin-commons')(env)
-
   wol = require('wol')
-
-  webos = Promise.promisifyAll(require('../lib/remote.js'))
-  Remote = webos.Remote
   
   # Device class representing the LG Smart TV
   class LgSmartTvDevice extends env.devices.PowerSwitch
@@ -15,7 +11,7 @@ module.exports = (env) ->
     constructor: (@config, @plugin, lastState) ->
       @_base = commons.base @, @config.class
       @_state = lastState? || false
-      @_interval = 5
+      @_interval = 5000
       @id = @config.id
       @name = @config.name
       @debug = @plugin.debug || false
@@ -24,7 +20,10 @@ module.exports = (env) ->
       @key = @config.key
       @_tvStarting = false
       @_remote = null
-      
+      @_powerStates = {
+        'Active':         true,
+        'Active Standby': false
+      }
       super()
       
       process.nextTick () =>
@@ -35,53 +34,40 @@ module.exports = (env) ->
       
       @_base.cancelUpdate()
       
-      remote = @plugin.getRemote()
-      remote.connectAsync({
-        address: @tvIp, 
-        key: @key
-      
-      }).then( () =>
-        @_base.debug __("Connected to: %s", @tvIp)
-        state = true
-        @_tvStarting = false
+      remote = @plugin.getRemote(@tvIp, @key)
+      return remote.getPowerState().then( (power) =>
+        @_setState @_powerStates[power.state]
         
-        remote.getAppAsync().then( (app) =>
-          @plugin.emit('currentApp', @tvIp, app) if app?
-        
-        ).finally( () =>
-          remote.getChannelAsync().then( (channel) =>
-            @plugin.emit('currentChannel', @tvIp, channel) if channel?
+        remote.getActiveApp()
+      ).then( (application) =>
+        if application?
+          #@_setState true
+          @plugin.emit('tvReady', {ip: @tvIp, key: @key })
+          @plugin.emit('currentInput', @tvIp, application)
           
-          ).finally( () =>
-            remote.getInputAsync().then( (input) =>
-              @plugin.emit('currentInput', @tvIp, input) if input?
-            
-            ).finally( () =>
-              Promise.resolve()
-            )
-          )
+          @_base.debug __("Connected to: %s", @tvIp)
+          @_base.debug __("Current App: %s", application.appId)
+        
+      ).then( () =>
+        remote.getActiveChannel().then( (channel) =>
+          @plugin.emit('currentChannel', @tvIp, channel) if channel?
+        
+        ).catch( (error) =>
+          @plugin.emit('currentChannel', @tvIp, {})
         )
+      
       ).catch( (error) =>
+        console.log(error)
         @_base.debug __("Could not connect: %s", error.code)
-        #state = false
-        @_tvStarting = false
+        #@_setState false
       
       ).finally( () =>
-        @_setState state if ! @_tvStarting
-        @plugin.emit('tvReady', {ip: @tvIp, key: @key }) if ! @_tvStarting
-        @_base.debug "LG TV Power status: ", state
-        remote.disconnectAsync()
-        remote = null
-        @_base.scheduleUpdate @_checkStatus, @_interval * 1000
+        @_base.scheduleUpdate @_checkStatus, @_interval
       
       )
     
-    showMessage: (message, title = "Home Automation Notification") =>
-      remote = @plugin.getRemote()
-      remote.connectAsync({ address: @tvIp, key: @key }).then( (res) =>
-        remote.showshowNotificationModalAsync( message, title )
-      
-      ).then( (res) =>
+    showMessage: (message) =>
+      return @plugin.getRemote(@tvIp, @key).createToast( message ).then( (res) =>
         @_base.debug __("Message %s displayed on %s", message, @name)
         Promise.resolve()
       
@@ -89,8 +75,6 @@ module.exports = (env) ->
         @_base.logErrorWithLevel( "warn", __("Message not displayed on %s", @name))
         Promise.reject()
       
-      ).finally( () =>
-        remote.disconnectAsync()
       )
     
     destroy: () ->
@@ -102,23 +86,19 @@ module.exports = (env) ->
         return Promise.resolve()
       
       unless newState
-        remote = @plugin.getRemote()
-        remote.connectAsync( { address: @tvIp, key: @key } ).then( (res) =>
-          remote.turnOffAsync()
+        return @plugin.getRemote(@tvIp, @key).turnOff().then( (res) =>
           @_setState newState
-          @_base.debug "LG TV State changed to: ", newState
+          @_base.debug "State changed to: ", newState
           Promise.resolve()
         
         ).catch( (error) =>
           @_base.logErrorWithLevel( "warn", error)
           Promise.reject()
         
-        ).finally( () =>
-          remote.disconnectAsync()
         )
       
       else
-        wol.wake( @tvMac).then( (res) =>
+        return wol.wake( @tvMac).then( (res) =>
           @_setState newState
           @_base.debug "LG TV State changed to: ", newState
           @_tvStarting = true

@@ -4,9 +4,6 @@ module.exports = (env) ->
   _ = env.require 'lodash'
   commons = require('pimatic-plugin-commons')(env)
   
-  webos = Promise.promisifyAll(require('../lib/remote.js'))
-  Remote = webos.Remote
-  
   class LgSmartTvButtonsDevice extends env.devices.ButtonsDevice
 
     constructor: (@config, @plugin, lastState) ->
@@ -29,7 +26,7 @@ module.exports = (env) ->
         @_button = button if button.id is @_lastPressedButton
       
     buttonPressed: (buttonId) ->
-      return Promise.resolve() if @_buttonPressPending
+      return Promise.resolve() if buttonId is @_lastPressedButton || @_buttonPressPending
       
       @_executeAction(buttonId).then( () =>
         @_buttonPressPending = false

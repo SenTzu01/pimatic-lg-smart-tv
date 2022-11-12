@@ -5,8 +5,6 @@ module.exports = (env) ->
   commons = require('pimatic-plugin-commons')(env)
   
   LgSmartTvButtonsDevice = require('./lg-smart-tv-buttons-device')(env)
-  webos = Promise.promisifyAll(require('../lib/remote.js'))
-  Remote = webos.Remote
   
   class LgSmartTvChannelsDevice extends LgSmartTvButtonsDevice
     constructor: (@config, @plugin, lastState) ->
@@ -14,27 +12,19 @@ module.exports = (env) ->
       @plugin.on('currentChannel', @_updateButton)
     
     _action: (button, key) =>
-      promise = null
-      remote = @plugin.getRemote()
-      
-      return remote.connectAsync({ address: @config.tvIp, key: key }).then( (res) =>
-        remote.setChannelAsync(button.webosId)
-      
-      ).then( (res) =>
+      return @plugin.getRemote(@_tv.tvIp, @_tv.key).setChannel(button.webosId).then( (res) =>
         @_base.debug __("TV changed to channel %s", button.text)
-        promise = Promise.resolve()
+        Promise.resolve()
       
       ).catch( (error) =>
         @_base.logErrorWithLevel( "warn", error)
         @_base.logErrorWithLevel( "warn", __("Could not change to channel %s", button.text))
-        promise = Promise.reject()
+        Promise.reject()
       
-      ).finally( () =>
-        remote.disconnectAsync()
-        return promise
       )
     
     _updateButton: (ip, channel) =>
+      return Promise.resolve() unless channel?.id?
       @_base.debug(__("channel.id: %s, channel.name: %s", channel.id, channel.name))
       
       return Promise.resolve() if ip isnt @config.tvIp

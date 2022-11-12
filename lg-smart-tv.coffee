@@ -2,10 +2,10 @@ module.exports = (env) ->
   
   Promise = env.require 'bluebird'
   commons = require('pimatic-plugin-commons')(env)
-  remote = Promise.promisifyAll(require('./lib/remote.js'))
-  scanner = Promise.promisifyAll(require('./lib/scanner.js'))
-  Remote = remote.Remote
-  Scanner = scanner.Scanner
+  #webos = require('webos')
+  webos = require('./lib/webos')
+  Remote = webos.WebOSDevice
+  Scanner = webos.WebOSDiscovery
   arp = Promise.promisifyAll(require('arp'))
   wol = require('wol')
     
@@ -69,38 +69,35 @@ module.exports = (env) ->
         @framework.deviceManager.discoverMessage( 'pimatic-lg-smart-tv', "Searching for LG Smart TV" )
 
         scanner = new Scanner()
-        scanner.startScanning()
-        
-        scanner.on 'device', (device) =>
+        @_mac = ''
+        @_key = ''
+        scanner.on('device', (device) =>
+          ip = device.getOpt('address')
+          arp.getMACAsync(ip).then( (mac) =>
+            @saveTvToConfig(ip, mac)
+            @_mac = mac
           
-          mac = "00:00:00:00:00:00"
-          newKey = null
-          
-          remote = @getRemote()
-          remote.connectAsync({ address: device.address }).then( (key) =>
-            newKey = key
-            arp.getMACAsync( device.address)
+          ).then( () =>
+            @createInputsDevice(device)
             
-          ).then( (address) =>
-            mac = address
-            @saveTvToConfig(device.address, mac)
-            @createChannelsDevice(remote, device)
+          ).then( (device) =>
+            @createSmartTvDevice(device, @_mac)
           
-          ).then( () =>
-            @createInputsDevice(remote, device)
+          ).then( (device) =>
+            @createAppsDevice(device)
           
-          ).then( () =>
-            @createAppsDevice(remote, device)
-          
-          ).then( () =>
-            @createSmartTvDevice(device, mac, newKey)
+          ).then( (device) =>
+            @createChannelsDevice(device)
             
           ).catch( (error) =>
-            env.logger.debug(error)
+            env.logger.info(error)
+            
           ).finally( () =>
-            remote.disconnectAsync()
-            scanner.stopScanning()
+            scanner.stop()
           )
+          
+        )
+        scanner.start()
     
     saveTvToConfig: (ip, mac) =>
       found = false
@@ -113,16 +110,16 @@ module.exports = (env) ->
       )
       @config.smartTVs.push({id: ip, mac: mac}) if !found
     
-    createChannelsDevice: (remote, device) =>
-      remote.getChannelsAsync().then( (channels) =>
-        deviceConfig = {
+    createChannelsDevice: (device) =>
+      deviceConfig = {
           class: "LgSmartTvChannelsDevice"
-          name: device.friendlyName
+          name: device.getOpt('friendlyName') + " Channels"
           id: 'lg-smart-tv-channels'
-          tvIp: device.address
+          tvIp: device.getOpt('address')
           buttons: []
-        }
-        
+      }
+      
+      device.getChannels().then( (channels) =>
         channels.map( (channel) =>
           #if channel.tv and channel.adult is 0 and !channel.scrambled
           button = {
@@ -133,67 +130,89 @@ module.exports = (env) ->
           deviceConfig.buttons.push(button)
         )
         @framework.deviceManager.discoveredDevice('pimatic-lg-smart-tv-channels', "#{deviceConfig.name}", deviceConfig)
+        Promise.resolve(device)
+      
+      ).catch( (error) =>
+        Promise.reject(error)
+      
       )
 
-    createInputsDevice: (remote, device) =>
-      remote.getInputsAsync().then( (inputs) =>
-        deviceConfig = {
-          class: "LgSmartTvInputsDevice"
-          name: device.friendlyName
-          id: 'lg-smart-tv-inputs'
-          tvIp: device.address
-          buttons: []
-        }
-        
+    createInputsDevice: (device) =>
+      deviceConfig = {
+        class: "LgSmartTvInputsDevice"
+        name: device.getOpt('friendlyName') + " Inputs"
+        id: 'lg-smart-tv-inputs'
+        tvIp: device.getOpt('address')
+        buttons: []
+      }
+      
+      device.getInputs().then( (inputs) =>
+        console.log inputs
         inputs.map( (input) =>
           button = {
-            id: input.id
+            id: input.appId
             text: input.label
           }
+          console.log(button.text)
           deviceConfig.buttons.push(button)
         )
         @framework.deviceManager.discoveredDevice('pimatic-lg-smart-tv-inputs', "#{deviceConfig.name}", deviceConfig)
-      )
+        Promise.resolve(device)
       
-    createAppsDevice: (remote, device) =>
-      remote.getAppsAsync().then( (apps) =>
+      ).catch( (error) =>
+        Promise.reject(error)
+      
+      )
+    
+    createAppsDevice: (device) =>
+      return new Promise( (resolve, reject) =>
         deviceConfig = {
           class: "LgSmartTvAppsDevice"
-          name: device.friendlyName
+          name: device.getOpt('friendlyName') + " Apps"
           id: 'lg-smart-tv-apps'
-          tvIp: device.address
+          tvIp: device.getOpt('address')
           buttons: []
         }
         
-        apps.map( (app) =>
-          button = {
-            id: app.id
-            text: app.title
-          }
-          deviceConfig.buttons.push(button)
+        device.getApps().then( (apps) =>
+          apps.map( (app) =>
+            button = {
+              id: app.id
+              text: app.title
+            }
+            deviceConfig.buttons.push(button)
+          )
+          @framework.deviceManager.discoveredDevice('pimatic-lg-smart-tv-apps', "#{deviceConfig.name}", deviceConfig)
+          resolve(device)
+        
+        ).catch( (error) =>
+          reject(error)
+        
         )
-        @framework.deviceManager.discoveredDevice('pimatic-lg-smart-tv-apps', "#{deviceConfig.name}", deviceConfig)
       )
     
-    createSmartTvDevice: (device, macAddress, key) =>
+    createSmartTvDevice: (device, mac) =>
       deviceConfig = {
         class: "LgSmartTvDevice"
-        name: device.friendlyName
-        id: "lg-smart-tv"
-        tvIp: device.address
-        tvMac: macAddress
-        key: key
+        name: device.getOpt('friendlyName')
+        id: device.getOpt('id')
+        tvIp: device.getOpt('address')
+        tvMac: mac
+        key: device.getOpt('key')
       }
+      
       @framework.deviceManager.discoveredDevice('pimatic-lg-smart-tv', "#{deviceConfig.name}", deviceConfig)
-    
+      return Promise.resolve(device)
+      
     turnOnTv: (mac) =>
       wol.wake(mac)
     
-    getRemote: () =>
-      return new Remote({
-        debug: @config.debug || false, 
-        reconnect: false, 
-        connectTimeout: false
+    getRemote: (ip, key = '') =>
+      return new webos.WebOSDevice({
+        key: key,
+        address: ip,
+        debug: false,
+        timeout: 1000
       })
     
     _callbackHandler: (className, classType) ->
